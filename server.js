@@ -34,17 +34,58 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Helper functions
+function loadInitialData() {
+    const initialDataPath = path.join(__dirname, 'data', 'initial-data.json');
+    try {
+        if (fs.existsSync(initialDataPath)) {
+            const data = fs.readFileSync(initialDataPath, 'utf8');
+            return JSON.parse(data);
+        }
+    } catch (error) {
+        console.error('Error reading initial data:', error);
+    }
+    return [];
+}
+
+function initializeUserData() {
+    const userDataPath = path.join(__dirname, 'data', 'checklists.json');
+    
+    // Only initialize if user data doesn't exist
+    if (!fs.existsSync(userDataPath)) {
+        const initialData = loadInitialData();
+        if (initialData.length > 0) {
+            try {
+                fs.writeFileSync(userDataPath, JSON.stringify(initialData, null, 2));
+                console.log('✅ Initialized user data with sample checklists');
+                return initialData;
+            } catch (error) {
+                console.error('Error initializing user data:', error);
+            }
+        }
+    }
+    return null;
+}
+
 function getChecklists() {
     const dataPath = path.join(__dirname, 'data', 'checklists.json');
+    
+    // If no user data exists, initialize with template data
     if (!fs.existsSync(dataPath)) {
+        const initialized = initializeUserData();
+        if (initialized) {
+            return initialized;
+        }
         return [];
     }
+    
     try {
         const data = fs.readFileSync(dataPath, 'utf8');
         return JSON.parse(data);
     } catch (error) {
         console.error('Error reading checklists:', error);
-        return [];
+        // If user data is corrupted, try to reinitialize
+        const initialized = initializeUserData();
+        return initialized || [];
     }
 }
 

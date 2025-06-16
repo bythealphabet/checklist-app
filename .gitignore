@@ -99,12 +99,15 @@ lib-cov
 coverage
 *.lcov
 
-# Uploaded files (you may want to keep these, but exclude from git)
+# Uploaded files (user content - exclude from git)
 uploads/*
 !uploads/.gitkeep
 
-# Data files (contains user data - you may want to backup separately)
+# User data files (private data - exclude from git)
 data/checklists.json
+
+# Keep template data in version control
+# data/initial-data.json - this stays in git
 
 # Build output
 dist/
