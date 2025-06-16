@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist - SolarGard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .product-image {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 0 auto 20px;
+            display: block;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .product-name {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .product-info {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .checklist-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s;
+        }
+
+        .checklist-item.completed {
+            background: #d5f4e6;
+            border-left-color: #27ae60;
+            opacity: 0.8;
+        }
+
+        .checklist-item.completed .item-text {
+            text-decoration: line-through;
+            color: #7f8c8d;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        .item-text {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .edit-mode .item-text {
+            border: none;
+            background: transparent;
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .edit-mode .item-text:focus {
+            background: white;
+            outline: 2px solid #3498db;
+        }
+
+        .reminders-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .reminders-content {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 20px;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+
+        .edit-mode .reminders-content {
+            border: 2px solid #3498db;
+            outline: none;
+            resize: vertical;
+        }
+
+        .progress-bar {
+            background: #ecf0f1;
+            border-radius: 10px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            height: 100%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .actions {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            transition: background 0.3s;
+            margin: 0 5px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .view-mode .edit-only {
+            display: none;
+        }
+
+        .edit-mode .view-only {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .product-name {
+                font-size: 2em;
+            }
+
+            .checklist-section,
+            .reminders-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img id="product-image" class="product-image" style="display: none;" alt="Product Image">
+            <div id="product-image-placeholder" style="display: none; font-size: 4em; margin-bottom: 20px;">📋</div>
+            <h1 id="product-name" class="product-name">Loading...</h1>
+            <p id="product-info" class="product-info">Installation Checklist</p>
+        </div>
+
+        <div class="main-content">
+            <div class="checklist-section">
+                <h2 class="section-title">Installation Checklist</h2>
+
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div id="progress-text" class="progress-text">0% Complete (0 of 0 items)</div>
+
+                <div id="checklist-items">
+                    <!-- Items will be loaded here -->
+                </div>
+
+                <div class="edit-only">
+                    <button type="button" class="btn" onclick="addNewItem()">+ Add Item</button>
+                </div>
+            </div>
+
+            <div class="reminders-section">
+                <h2 class="section-title">Reminders & Extra Items</h2>
+                <div id="reminders-content" class="reminders-content" contenteditable="false">
+                    <!-- Reminders will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <p>Loading checklist...</p>
+        </div>
+
+        <div class="actions">
+            <button id="edit-btn" class="btn btn-warning view-only" onclick="toggleEditMode()">Edit Checklist</button>
+            <button id="save-btn" class="btn btn-success edit-only" onclick="saveChecklist()">Save Changes</button>
+            <button id="cancel-btn" class="btn btn-secondary edit-only" onclick="cancelEdit()">Cancel</button>
+            <a href="/" class="btn">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        let currentChecklist = null;
+        let isEditMode = false;
+        let isViewOnly = false;
+
+        // Get checklist ID from URL
+        function getChecklistId() {
+            const pathParts = window.location.pathname.split('/');
+            return pathParts[pathParts.length - 1];
+        }
+
+        // Check if we're in view-only mode
+        function checkViewMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            isViewOnly = urlParams.get('view') === 'true';
+            if (isViewOnly) {
+                document.body.classList.add('view-mode');
+            }
+        }
+
+        // Load checklist data
+        async function loadChecklist() {
+            const checklistId = getChecklistId();
+
+            try {
+                const response = await fetch(`/api/checklists/${checklistId}`);
+                if (!response.ok) {
+                    throw new Error('Checklist not found');
+                }
+
+                currentChecklist = await response.json();
+                displayChecklist();
+                document.getElementById('loading').style.display = 'none';
+            } catch (error) {
+                console.error('Error loading checklist:', error);
+                document.getElementById('loading').innerHTML = '<p>Error loading checklist. <a href="/">Go back</a></p>';
+            }
+        }
+
+        // Display checklist data
+        function displayChecklist() {
+            document.getElementById('product-name').textContent = currentChecklist.name;
+
+            if (currentChecklist.image) {
+                const img = document.getElementById('product-image');
+                img.src = currentChecklist.image;
+                img.style.display = 'block';
+            } else {
+                document.getElementById('product-image-placeholder').style.display = 'block';
+            }
+
+            displayChecklistItems();
+            displayReminders();
+            updateProgress();
+        }
+
+        // Display checklist items
+        function displayChecklistItems() {
+            const container = document.getElementById('checklist-items');
+            container.innerHTML = '';
+
+            if (!currentChecklist.items || currentChecklist.items.length === 0) {
+                container.innerHTML = '<p>No checklist items found.</p>';
+                return;
+            }
+
+            currentChecklist.items.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `checklist-item ${item.completed ? 'completed' : ''}`;
+
+                itemDiv.innerHTML = `
+                    <input type="checkbox" ${item.completed ? 'checked' : ''} 
+                           onchange="toggleItem(${index})" ${isViewOnly ? 'disabled' : ''}>
+                    <input type="text" class="item-text" value="${item.text}" 
+                           onchange="updateItemText(${index}, this.value)" readonly>
+                    <button type="button" class="btn btn-secondary edit-only" 
+                            onclick="removeItem(${index})" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;">Remove</button>
+                `;
+
+                container.appendChild(itemDiv);
+            });
+        }
+
+        // Display reminders
+        function displayReminders() {
+            const reminders = document.getElementById('reminders-content');
+            reminders.textContent = currentChecklist.reminders || 'No reminders added.';
+        }
+
+        // Toggle checklist item completion
+        function toggleItem(index) {
+            currentChecklist.items[index].completed = !currentChecklist.items[index].completed;
+            displayChecklistItems();
+            updateProgress();
+
+            if (!isEditMode) {
+                saveChecklist(true); // Auto-save when checking items
+            }
+        }
+
+        // Update item text
+        function updateItemText(index, newText) {
+            currentChecklist.items[index].text = newText;
+        }
+
+        // Add new item
+        function addNewItem() {
+            if (!currentChecklist.items) {
+                currentChecklist.items = [];
+            }
+
+            currentChecklist.items.push({
+                text: 'New checklist item',
+                completed: false
+            });
+
+            displayChecklistItems();
+            updateProgress();
+        }
+
+        // Remove item
+        function removeItem(index) {
+            if (confirm('Are you sure you want to remove this item?')) {
+                currentChecklist.items.splice(index, 1);
+                displayChecklistItems();
+                updateProgress();
+            }
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            if (!currentChecklist.items || currentChecklist.items.length === 0) {
+                document.getElementById('progress-fill').style.width = '0%';
+                document.getElementById('progress-text').textContent = 'No items';
+                return;
+            }
+
+            const completed = currentChecklist.items.filter(item => item.completed).length;
+            const total = currentChecklist.items.length;
+            const percentage = Math.round((completed / total) * 100);
+
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            document.getElementById('progress-text').textContent =
+                `${percentage}% Complete (${completed} of ${total} items)`;
+        }
+
+        // Toggle edit mode
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+
+            if (isEditMode) {
+                document.body.classList.remove('view-mode');
+                document.body.classList.add('edit-mode');
+
+                // Make text inputs editable
+                document.querySelectorAll('.item-text').forEach(input => {
+                    input.removeAttribute('readonly');
+                });
+
+                // Make reminders editable
+                document.getElementById('reminders-content').setAttribute('contenteditable', 'true');
+            } else {
+                document.body.classList.remove('edit-mode');
+                document.body.classList.add('view-mode');
+
+                // Make text inputs readonly
+                document.querySelectorAll('.item-text').forEach(input => {
+                    input.setAttribute('readonly', 'true');
+                });
+
+                // Make reminders readonly
+                document.getElementById('reminders-content').setAttribute('contenteditable', 'false');
+            }
+        }
+
+        // Cancel edit
+        function cancelEdit() {
+            if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+                loadChecklist(); // Reload original data
+                toggleEditMode();
+            }
+        }
+
+        // Save checklist
+        async function saveChecklist(silent = false) {
+            const checklistId = getChecklistId();
+
+            // Update reminders from content
+            currentChecklist.reminders = document.getElementById('reminders-content').textContent;
+
+            const formData = new FormData();
+            formData.append('name', currentChecklist.name);
+            formData.append('items', JSON.stringify(currentChecklist.items));
+            formData.append('reminders', currentChecklist.reminders);
+
+            try {
+                const response = await fetch(`/api/checklists/${checklistId}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    if (!silent) {
+                        alert('Checklist saved successfully!');
+                        if (isEditMode) {
+                            toggleEditMode();
+                        }
+                    }
+                } else {
+                    throw new Error('Failed to save checklist');
+                }
+            } catch (error) {
+                console.error('Error saving checklist:', error);
+                if (!silent) {
+                    alert('Error saving checklist. Please try again.');
+                }
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            checkViewMode();
+            loadChecklist();
+        });
+    </script>
+</body>
+
+</html>

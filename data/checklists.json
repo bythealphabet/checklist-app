@@ -1,0 +1,64 @@
+[
+  {
+    "id": "1704067200000",
+    "name": "Solar Panel System Model X-200",
+    "image": null,
+    "items": [
+      {
+        "text": "Check site conditions and safety requirements",
+        "completed": false
+      },
+      {
+        "text": "Verify all equipment is present and undamaged",
+        "completed": false
+      },
+      {
+        "text": "Prepare installation tools and safety equipment",
+        "completed": false
+      },
+      {
+        "text": "Review installation manual and local codes",
+        "completed": false
+      },
+      {
+        "text": "Measure and mark panel mounting locations",
+        "completed": false
+      },
+      {
+        "text": "Install mounting rails and hardware",
+        "completed": false
+      },
+      {
+        "text": "Mount solar panels to rails",
+        "completed": false
+      },
+      {
+        "text": "Connect DC wiring between panels",
+        "completed": false
+      },
+      {
+        "text": "Install and connect inverter",
+        "completed": false
+      },
+      {
+        "text": "Run AC wiring to electrical panel",
+        "completed": false
+      },
+      {
+        "text": "Install production meter and monitoring",
+        "completed": false
+      },
+      {
+        "text": "Test system operation and safety",
+        "completed": false
+      },
+      {
+        "text": "Complete final inspection and documentation",
+        "completed": false
+      }
+    ],
+    "reminders": "Extra items to bring:\n- Additional grounding equipment\n- Weather sealing materials\n- Spare MC4 connectors\n- Digital multimeter for testing\n\nNotes:\n- Check weather forecast before installation\n- Confirm utility interconnection approval\n- Take before/after photos for documentation",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+] 
