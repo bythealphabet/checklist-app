@@ -62,57 +62,44 @@
     "updatedAt": "2024-01-01T00:00:00.000Z"
   },
   {
-    "id": "sample-2",
-    "name": "Solar Battery System Installation",
-    "image": null,
+    "id": "1750136731329",
+    "name": "Test Checklist",
     "items": [
       {
-        "text": "Verify battery storage location meets requirements",
-        "completed": false
-      },
-      {
-        "text": "Check ventilation and temperature conditions",
-        "completed": false
-      },
-      {
-        "text": "Install battery mounting system",
-        "completed": false
-      },
-      {
-        "text": "Position and secure battery units",
-        "completed": false
-      },
-      {
-        "text": "Connect battery DC wiring",
-        "completed": false
-      },
-      {
-        "text": "Install battery management system",
-        "completed": false
-      },
-      {
-        "text": "Connect to inverter/charge controller",
-        "completed": false
-      },
-      {
-        "text": "Configure system settings",
-        "completed": false
-      },
-      {
-        "text": "Test charging and discharging cycles",
-        "completed": false
-      },
-      {
-        "text": "Install monitoring system",
-        "completed": false
-      },
-      {
-        "text": "Complete system commissioning",
+        "name": "Test Item",
+        "amount": 1,
         "completed": false
       }
     ],
-    "reminders": "Battery Safety:\n- Wear protective equipment\n- Follow manufacturer's safety guidelines\n- Ensure proper ventilation\n- Check for proper grounding\n\nTools needed:\n- Battery terminal tools\n- Torque wrench\n- Safety equipment\n- Multimeter",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
+    "createdAt": "2025-06-17T05:05:31.329Z",
+    "updatedAt": "2025-06-17T05:05:31.329Z"
+  },
+  {
+    "id": "1750140120186",
+    "name": "Vertical drop",
+    "items": [
+      {
+        "image": "/uploads/itemImage-1750140110571-285308231.png",
+        "amount": 1,
+        "name": "brackets",
+        "completed": false
+      }
+    ],
+    "createdAt": "2025-06-17T06:02:00.187Z",
+    "updatedAt": "2025-06-17T06:02:00.187Z"
+  },
+  {
+    "id": "1750162831319",
+    "name": "Retractable / KnikArm Awning",
+    "items": [
+      {
+        "image": "/uploads/itemImage-1750162823580-868078007.png",
+        "amount": 1,
+        "name": "barrilla",
+        "completed": false
+      }
+    ],
+    "createdAt": "2025-06-17T12:20:31.319Z",
+    "updatedAt": "2025-06-17T12:20:31.319Z"
   }
 ]

@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const puppeteer = require('puppeteer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,16 +36,41 @@ const upload = multer({ storage: storage });
 
 // Helper functions
 function loadInitialData() {
-    const initialDataPath = path.join(__dirname, 'data', 'initial-data.json');
-    try {
-        if (fs.existsSync(initialDataPath)) {
-            const data = fs.readFileSync(initialDataPath, 'utf8');
-            return JSON.parse(data);
+    const initialChecklists = [
+        {
+            id: '1',
+            name: 'Vertical Drop Awning',
+            items: [
+                { name: 'Wall Brackets (Set)', amount: 2, image: '', completed: false },
+                { name: 'Awning Fabric', amount: 1, image: '', completed: false },
+                { name: 'Bottom Rail', amount: 1, image: '', completed: false },
+                { name: 'Side Guides', amount: 2, image: '', completed: false },
+                { name: 'Mounting Screws', amount: 8, image: '', completed: false },
+                { name: 'Wall Plugs', amount: 8, image: '', completed: false },
+                { name: 'Wind Sensor (Optional)', amount: 1, image: '', completed: false }
+            ],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        },
+        {
+            id: '2',
+            name: 'Retractable Patio Awning',
+            items: [
+                { name: 'Awning Frame', amount: 1, image: '', completed: false },
+                { name: 'Support Arms', amount: 2, image: '', completed: false },
+                { name: 'Wall Mounting Brackets', amount: 3, image: '', completed: false },
+                { name: 'Fabric Cover', amount: 1, image: '', completed: false },
+                { name: 'Crank Handle', amount: 1, image: '', completed: false },
+                { name: 'Heavy Duty Screws', amount: 12, image: '', completed: false },
+                { name: 'Wall Anchors', amount: 12, image: '', completed: false },
+                { name: 'Weather Shield', amount: 1, image: '', completed: false }
+            ],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
         }
-    } catch (error) {
-        console.error('Error reading initial data:', error);
-    }
-    return [];
+    ];
+
+    return initialChecklists;
 }
 
 function initializeUserData() {
@@ -128,53 +154,253 @@ app.get('/api/checklists/:id', (req, res) => {
     res.json(checklist);
 });
 
-app.post('/api/checklists', upload.single('image'), (req, res) => {
+// Get network info
+app.get('/api/network-info', (req, res) => {
+    const os = require('os');
+    const networkInterfaces = os.networkInterfaces();
+    let networkIP = 'localhost';
+    
+    // Find the first non-internal IPv4 address
+    for (const interfaceName in networkInterfaces) {
+        const addresses = networkInterfaces[interfaceName];
+        for (const address of addresses) {
+            if (address.family === 'IPv4' && !address.internal) {
+                networkIP = address.address;
+                break;
+            }
+        }
+        if (networkIP !== 'localhost') break;
+    }
+    
+    res.json({
+        localUrl: `http://localhost:${PORT}`,
+        networkUrl: `http://${networkIP}:${PORT}`,
+        networkIP: networkIP
+    });
+});
+
+// Generate PDF for checklist
+app.get('/api/checklists/:id/pdf', async (req, res) => {
+    console.log('PDF request received for checklist:', req.params.id);
+    
     const checklists = getChecklists();
-    const newChecklist = {
-        id: Date.now().toString(),
-        name: req.body.name,
-        image: req.file ? `/uploads/${req.file.filename}` : null,
-        items: req.body.items ? JSON.parse(req.body.items) : [],
-        reminders: req.body.reminders || '',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    };
+    const checklist = checklists.find(c => c.id === req.params.id);
     
-    checklists.push(newChecklist);
-    
-    if (saveChecklists(checklists)) {
-        res.json(newChecklist);
-    } else {
-        res.status(500).json({ error: 'Failed to save checklist' });
+    if (!checklist) {
+        console.log('Checklist not found:', req.params.id);
+        return res.status(404).json({ error: 'Checklist not found' });
+    }
+
+    console.log('Generating PDF for checklist:', checklist.name);
+    console.log('Items count:', checklist.items ? checklist.items.length : 0);
+
+    let browser;
+    try {
+        console.log('Launching Puppeteer...');
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage'
+            ]
+        });
+        
+        const page = await browser.newPage();
+        
+        // Generate simplified HTML content for PDF
+        console.log('Generating HTML content...');
+        const htmlContent = generateSimplePDFHTML(checklist);
+        console.log('HTML content length:', htmlContent.length);
+        
+        console.log('Setting HTML content...');
+        await page.setContent(htmlContent, { 
+            waitUntil: 'networkidle0',
+            timeout: 30000
+        });
+        
+        console.log('Generating PDF...');
+        const pdf = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: {
+                top: '20px',
+                right: '20px',
+                bottom: '20px',
+                left: '20px'
+            }
+        });
+        
+        console.log('PDF generated successfully, size:', pdf.length, 'bytes');
+        
+        // Validate PDF buffer
+        if (!pdf || pdf.length === 0) {
+            throw new Error('Generated PDF is empty');
+        }
+        
+        // Check if it starts with PDF signature
+        const first5Bytes = pdf.slice(0, 5);
+        const pdfSignature = String.fromCharCode(...first5Bytes);
+        console.log('PDF signature:', pdfSignature);
+        if (pdfSignature !== '%PDF-') {
+            console.log('Invalid PDF signature, first 5 bytes:', Array.from(first5Bytes));
+            throw new Error('Generated file is not a valid PDF');
+        }
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${checklist.name.replace(/[^a-zA-Z0-9\s]/g, '_')}_checklist.pdf"`);
+        res.setHeader('Content-Length', pdf.length);
+        res.send(pdf);
+        
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        console.error('Error stack:', error.stack);
+        res.status(500).json({ 
+            error: 'Failed to generate PDF', 
+            details: error.message 
+        });
+    } finally {
+        if (browser) {
+            try {
+                await browser.close();
+                console.log('Browser closed successfully');
+            } catch (closeError) {
+                console.error('Error closing browser:', closeError);
+            }
+        }
     }
 });
 
-app.put('/api/checklists/:id', upload.single('image'), (req, res) => {
-    const checklists = getChecklists();
-    const index = checklists.findIndex(c => c.id === req.params.id);
+// Simplified PDF HTML generation for debugging
+function generateSimplePDFHTML(checklist) {
+    const checklistName = checklist.name || 'Unnamed Checklist';
+    const currentDate = new Date().toLocaleDateString();
     
-    if (index === -1) {
-        return res.status(404).json({ error: 'Checklist not found' });
+    const itemsHTML = checklist.items && checklist.items.length > 0 
+        ? checklist.items.map((item, index) => {
+            const itemName = item.name || item.text || 'Unnamed item';
+            const itemAmount = parseInt(item.amount) || 1;
+            
+            return `
+            <tr>
+                <td style="width: 30px; text-align: center;">☐</td>
+                <td style="width: 60px; text-align: center;">${itemAmount}</td>
+                <td>${itemName}</td>
+            </tr>`;
+        }).join('')
+        : '<tr><td colspan="3" style="text-align: center; padding: 20px;">No items found</td></tr>';
+
+    return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>${checklistName}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <h1>${checklistName}</h1>
+    <p>Date: ${currentDate}</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>✓</th>
+                <th>Qty</th>
+                <th>Item</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${itemsHTML}
+        </tbody>
+    </table>
+    
+    <div style="margin-top: 40px; border: 1px solid #333; padding: 20px; min-height: 100px;">
+        <strong>Notes:</strong><br>
+        <br><br><br>
+    </div>
+</body>
+</html>`;
+}
+
+// Upload single image for checklist item
+app.post('/api/upload-item-image', upload.single('itemImage'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No image file provided' });
     }
     
-    const updatedChecklist = {
-        ...checklists[index],
-        name: req.body.name || checklists[index].name,
-        items: req.body.items ? JSON.parse(req.body.items) : checklists[index].items,
-        reminders: req.body.reminders !== undefined ? req.body.reminders : checklists[index].reminders,
-        updatedAt: new Date().toISOString()
-    };
+    res.json({
+        success: true,
+        imagePath: `/uploads/${req.file.filename}`,
+        filename: req.file.filename
+    });
+});
+
+app.post('/api/checklists', (req, res) => {
+    console.log('Creating new checklist...');
     
-    if (req.file) {
-        updatedChecklist.image = `/uploads/${req.file.filename}`;
+    try {
+        const { name, items } = req.body;
+        
+        if (!name || !name.trim()) {
+            return res.status(400).json({ success: false, message: 'Checklist name is required' });
+        }
+
+        const newChecklist = {
+            id: Date.now().toString(),
+            name: name.trim(),
+            items: items || [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        // Save checklist
+        const checklists = getChecklists();
+        checklists.push(newChecklist);
+        saveChecklists(checklists);
+
+        console.log('Checklist created successfully:', newChecklist.id);
+        res.json({ success: true, checklist: newChecklist });
+    } catch (error) {
+        console.error('Error creating checklist:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
+});
+
+app.put('/api/checklists/:id', (req, res) => {
+    console.log('Updating checklist:', req.params.id);
     
-    checklists[index] = updatedChecklist;
-    
-    if (saveChecklists(checklists)) {
-        res.json(updatedChecklist);
-    } else {
-        res.status(500).json({ error: 'Failed to update checklist' });
+    try {
+        const checklistId = req.params.id;
+        const { name, items } = req.body;
+        
+        const checklists = getChecklists();
+        const checklistIndex = checklists.findIndex(c => c.id === checklistId);
+        
+        if (checklistIndex === -1) {
+            return res.status(404).json({ success: false, message: 'Checklist not found' });
+        }
+
+        // Update checklist
+        checklists[checklistIndex] = {
+            ...checklists[checklistIndex],
+            name: name || checklists[checklistIndex].name,
+            items: items || checklists[checklistIndex].items,
+            updatedAt: new Date().toISOString()
+        };
+
+        saveChecklists(checklists);
+        
+        console.log('Checklist updated successfully:', checklistId);
+        res.json({ success: true, checklist: checklists[checklistIndex] });
+    } catch (error) {
+        console.error('Error updating checklist:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
 
@@ -196,5 +422,29 @@ app.delete('/api/checklists/:id', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`SolarGard Checklist Manager running on http://localhost:${PORT}`);
+    const os = require('os');
+    const networkInterfaces = os.networkInterfaces();
+    let networkIP = 'localhost';
+    
+    // Find the first non-internal IPv4 address
+    for (const interfaceName in networkInterfaces) {
+        const addresses = networkInterfaces[interfaceName];
+        for (const address of addresses) {
+            if (address.family === 'IPv4' && !address.internal) {
+                networkIP = address.address;
+                break;
+            }
+        }
+        if (networkIP !== 'localhost') break;
+    }
+    
+    console.log(`\n🚀 SolarGard Checklist Manager is running!`);
+    console.log(`\n📱 Access Options:`);
+    console.log(`   Local (this computer): http://localhost:${PORT}`);
+    console.log(`   Network (phone/tablet): http://${networkIP}:${PORT}`);
+    console.log(`\n💡 To access from your phone:`);
+    console.log(`   1. Make sure phone is on same WiFi network`);
+    console.log(`   2. Open browser on phone`);
+    console.log(`   3. Go to: http://${networkIP}:${PORT}`);
+    console.log(`\n🔧 Press Ctrl+C to stop the server\n`);
 }); 

@@ -146,6 +146,37 @@
             color: #7f8c8d;
         }
 
+        .network-info {
+            background: #e8f4fd;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .network-info h4 {
+            margin: 0 0 10px 0;
+            color: #2980b9;
+            font-size: 16px;
+        }
+
+        .network-info .access-url {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 5px 0;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .network-info .instructions {
+            margin-top: 10px;
+            color: #34495e;
+        }
+
         @media (max-width: 768px) {
             .checklists-grid {
                 grid-template-columns: 1fr;
@@ -173,6 +204,18 @@
             <a href="/create" class="btn">+ Create New Checklist</a>
         </div>
 
+        <div id="network-info" class="network-info" style="display: none;">
+            <h4>📱 Access from Phone/Tablet</h4>
+            <div>Local access: <span class="access-url">http://localhost:3000</span></div>
+            <div>Network access: <span class="access-url" id="network-url">Loading...</span></div>
+            <div class="instructions">
+                <strong>To access from your phone:</strong><br>
+                1. Make sure your phone is on the same WiFi network<br>
+                2. Open browser on your phone<br>
+                3. Go to the Network access URL above
+            </div>
+        </div>
+
         <div id="loading" class="loading">
             <p>Loading checklists...</p>
         </div>
@@ -183,6 +226,12 @@
         <div id="no-checklists" class="no-checklists" style="display: none;">
             <h3>No checklists found</h3>
             <p>Create your first installation checklist to get started!</p>
+        </div>
+
+        <div class="network-info">
+            <h4>Network Access Information</h4>
+            <p class="access-url">Access URL: <span class="access-url">http://example.com</span></p>
+            <p class="instructions">Instructions: Follow these steps to access the application from your phone.</p>
         </div>
     </div>
 
@@ -203,6 +252,20 @@
             } catch (error) {
                 console.error('Error loading checklists:', error);
                 document.getElementById('loading').innerHTML = '<p>Error loading checklists. Please try again.</p>';
+            }
+        }
+
+        async function loadNetworkInfo() {
+            try {
+                const response = await fetch('/api/network-info');
+                const networkInfo = await response.json();
+
+                document.getElementById('network-url').textContent = networkInfo.networkUrl;
+                document.getElementById('network-info').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading network info:', error);
+                document.getElementById('network-url').textContent = 'Unable to detect network IP';
+                document.getElementById('network-info').style.display = 'block';
             }
         }
 
@@ -231,6 +294,8 @@
                         <div class="card-actions">
                             <button onclick="viewChecklist('${checklist.id}')" class="btn btn-small">View</button>
                             <a href="/edit/${checklist.id}" class="btn btn-small">Edit</a>
+                            <button onclick="downloadPDF('${checklist.id}', '${checklist.name}')" class="btn btn-danger btn-small">📄 PDF</button>
+                            <button onclick="printChecklist('${checklist.id}')" class="btn btn-secondary btn-small">🖨️ Print</button>
                             <button onclick="deleteChecklist('${checklist.id}')" class="btn btn-danger btn-small">Delete</button>
                         </div>
                     </div>
@@ -242,6 +307,67 @@
 
         function viewChecklist(id) {
             window.location.href = `/edit/${id}?view=true`;
+        }
+
+        function downloadPDF(id, name) {
+            const downloadUrl = `/api/checklists/${id}/pdf`;
+
+            // Show loading feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Generating...';
+            button.disabled = true;
+
+            // Create a temporary link and trigger download
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = `${name.replace(/[^a-zA-Z0-9\s]/g, '_')}_checklist.pdf`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+
+            // Test if the PDF endpoint is working
+            fetch(downloadUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    // Create download link with blob
+                    const url = window.URL.createObjectURL(blob);
+                    link.href = url;
+                    link.click();
+                    window.URL.revokeObjectURL(url);
+
+                    // Reset button
+                    button.textContent = originalText;
+                    button.disabled = false;
+                })
+                .catch(error => {
+                    console.error('PDF download error:', error);
+                    alert('Error generating PDF: ' + error.message);
+
+                    // Reset button
+                    button.textContent = originalText;
+                    button.disabled = false;
+                })
+                .finally(() => {
+                    document.body.removeChild(link);
+                });
+        }
+
+        function printChecklist(id) {
+            // Open the checklist in a new window for printing
+            const printUrl = `/edit/${id}?view=true&print=true`;
+            const printWindow = window.open(printUrl, '_blank');
+
+            // Wait for the window to load, then trigger print
+            printWindow.onload = function () {
+                setTimeout(() => {
+                    printWindow.print();
+                }, 1000);
+            };
         }
 
         async function deleteChecklist(id) {
@@ -266,7 +392,10 @@
         }
 
         // Load checklists when page loads
-        document.addEventListener('DOMContentLoaded', loadChecklists);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadChecklists();
+            loadNetworkInfo();
+        });
     </script>
 </body>
 

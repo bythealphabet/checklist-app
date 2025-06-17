@@ -2,12 +2,64 @@
   "name": "solargard-checklist",
   "version": "1.0.0",
   "description": "Installation checklist manager for solar products",
-  "main": "server.js",
+  "main": "electron.js",
+  "homepage": "./",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "pkg . --targets node18-win-x64 --output dist/solargard-checklist.exe",
-    "build-all": "pkg . --targets node18-win-x64,node18-linux-x64,node18-macos-x64 --out-path dist/"
+    "electron": "electron .",
+    "electron-dev": "NODE_ENV=development electron .",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux",
+    "dist": "electron-builder --publish=never",
+    "pack": "electron-builder --dir"
+  },
+  "build": {
+    "appId": "com.solargard.checklist",
+    "productName": "SolarGard Checklist",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/**/*",
+      "node_modules/express/**/*",
+      "node_modules/multer/**/*",
+      "node_modules/path/**/*",
+      "node_modules/fs/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "data/",
+        "to": "data/"
+      },
+      {
+        "from": "public/",
+        "to": "public/"
+      },
+      {
+        "from": "uploads/",
+        "to": "uploads/"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "bin": "server.js",
   "pkg": {
@@ -20,11 +72,14 @@
   },
   "dependencies": {
     "express": "^4.18.2",
+    "fs": "^0.0.1-security",
     "multer": "^1.4.5-lts.1",
     "path": "^0.12.7",
-    "fs": "^0.0.1-security"
+    "puppeteer": "^24.10.1"
   },
   "devDependencies": {
+    "electron": "^36.4.0",
+    "electron-builder": "^26.0.12",
     "nodemon": "^3.0.1",
     "pkg": "^5.8.1"
   },

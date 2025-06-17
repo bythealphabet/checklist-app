@@ -1,118 +1,351 @@
 [
   {
-    "id": "sample-1",
-    "name": "Solar Panel System - Residential",
-    "image": null,
+    "id": "1",
+    "title": "Vertical Drop Awning Installation - Standard Window",
+    "description": "Complete installation checklist for vertical drop awning on standard residential window",
+    "category": "Awning Installation",
+    "priority": "High",
+    "estimatedTime": "4-6 hours",
     "items": [
       {
-        "text": "Check site conditions and safety requirements",
+        "id": "item1",
+        "text": "Wall mounting brackets (heavy-duty)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 2,
+        "unit": "pieces"
+      },
+      {
+        "id": "item2",
+        "text": "Lag bolts (3/8\" x 5\" galvanized)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 8,
+        "unit": "pieces"
+      },
+      {
+        "id": "item3",
+        "text": "Wall anchors (masonry anchors if needed)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 8,
+        "unit": "pieces"
+      },
+      {
+        "id": "item4",
+        "text": "Washers (3/8\" galvanized)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 8,
+        "unit": "pieces"
+      },
+      {
+        "id": "item5",
+        "text": "Awning fabric assembly with roller tube",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "unit"
+      },
+      {
+        "id": "item6",
+        "text": "Side guide rails",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 2,
+        "unit": "pieces"
+      },
+      {
+        "id": "item7",
+        "text": "Bottom rail with pull handle",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "piece"
+      },
+      {
+        "id": "item8",
+        "text": "Wind lock mechanism",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "set"
+      },
+      {
+        "id": "item9",
+        "text": "Silicone sealant/caulk",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 2,
+        "unit": "tubes"
+      },
+      {
+        "id": "item10",
+        "text": "Drill with masonry bits (1/4\" and pilot bits)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "set"
+      },
+      {
+        "id": "item11",
+        "text": "Level (3-4 foot minimum)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "piece"
+      },
+      {
+        "id": "item12",
+        "text": "Stud finder",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "piece"
+      },
+      {
+        "id": "item13",
+        "text": "Socket wrench set (9/16\" socket)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "set"
+      },
+      {
+        "id": "item14",
+        "text": "Measuring tape",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "piece"
+      },
+      {
+        "id": "item15",
+        "text": "Safety ladder or scaffolding",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "set"
+      }
+    ],
+    "reminders": [
+      {
+        "id": "reminder1",
+        "text": "Check local building codes and HOA requirements before installation",
+        "dueDate": "2025-01-15",
         "completed": false
       },
       {
-        "text": "Verify all equipment is present and undamaged",
+        "id": "reminder2",
+        "text": "Verify wall structure can support awning weight (typically 50-100 lbs)",
+        "dueDate": "2025-01-16",
         "completed": false
       },
       {
-        "text": "Prepare installation tools and safety equipment",
-        "completed": false
-      },
-      {
-        "text": "Review installation manual and local codes",
-        "completed": false
-      },
-      {
-        "text": "Measure and mark panel mounting locations",
-        "completed": false
-      },
-      {
-        "text": "Install mounting rails and hardware",
-        "completed": false
-      },
-      {
-        "text": "Mount solar panels to rails",
-        "completed": false
-      },
-      {
-        "text": "Connect DC wiring between panels",
-        "completed": false
-      },
-      {
-        "text": "Install and connect inverter",
-        "completed": false
-      },
-      {
-        "text": "Run AC wiring to electrical panel",
-        "completed": false
-      },
-      {
-        "text": "Install production meter and monitoring",
-        "completed": false
-      },
-      {
-        "text": "Test system operation and safety",
-        "completed": false
-      },
-      {
-        "text": "Complete final inspection and documentation",
+        "id": "reminder3",
+        "text": "Test awning operation after installation - extend and retract 3 times",
+        "dueDate": "2025-01-17",
         "completed": false
       }
     ],
-    "reminders": "Extra items to bring:\n- Additional grounding equipment\n- Weather sealing materials\n- Spare MC4 connectors\n- Digital multimeter for testing\n\nNotes:\n- Check weather forecast before installation\n- Confirm utility interconnection approval\n- Take before/after photos for documentation",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
+    "createdAt": "2025-01-14T10:00:00Z",
+    "updatedAt": "2025-01-14T10:00:00Z"
   },
   {
-    "id": "sample-2",
-    "name": "Solar Battery System Installation",
-    "image": null,
+    "id": "2",
+    "title": "Retractable Patio Awning Installation - Large Coverage",
+    "description": "Complete installation checklist for motorized retractable patio awning with 12ft projection",
+    "category": "Awning Installation",
+    "priority": "High",
+    "estimatedTime": "6-8 hours",
     "items": [
       {
-        "text": "Verify battery storage location meets requirements",
+        "id": "item1",
+        "text": "Heavy-duty wall mounting brackets",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 4,
+        "unit": "pieces"
+      },
+      {
+        "id": "item2",
+        "text": "Lag bolts (1/2\" x 6\" galvanized)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 16,
+        "unit": "pieces"
+      },
+      {
+        "id": "item3",
+        "text": "Lateral arm assemblies with springs",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 2,
+        "unit": "sets"
+      },
+      {
+        "id": "item4",
+        "text": "Motorized roller tube assembly",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "unit"
+      },
+      {
+        "id": "item5",
+        "text": "Awning fabric (weather-resistant)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "piece"
+      },
+      {
+        "id": "item6",
+        "text": "Front valance with LED strip (optional)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "piece"
+      },
+      {
+        "id": "item7",
+        "text": "Motor control unit with remote",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "set"
+      },
+      {
+        "id": "item8",
+        "text": "Wind sensor (automatic retraction)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "piece"
+      },
+      {
+        "id": "item9",
+        "text": "Electrical conduit and weatherproof outlet",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "set"
+      },
+      {
+        "id": "item10",
+        "text": "Wall anchors (concrete/masonry)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 16,
+        "unit": "pieces"
+      },
+      {
+        "id": "item11",
+        "text": "Waterproof sealant",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 3,
+        "unit": "tubes"
+      },
+      {
+        "id": "item12",
+        "text": "Hammer drill with masonry bits",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "set"
+      },
+      {
+        "id": "item13",
+        "text": "Professional level (4-6 foot)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "piece"
+      },
+      {
+        "id": "item14",
+        "text": "Socket wrench set with ratchet",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "set"
+      },
+      {
+        "id": "item15",
+        "text": "Extension ladder (minimum 10ft)",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "piece"
+      },
+      {
+        "id": "item16",
+        "text": "Helper/assistant for installation",
+        "completed": false,
+        "notes": "",
+        "image": null,
+        "quantity": 1,
+        "unit": "person"
+      }
+    ],
+    "reminders": [
+      {
+        "id": "reminder1",
+        "text": "Schedule electrical inspection if hardwiring motor",
+        "dueDate": "2025-01-18",
         "completed": false
       },
       {
-        "text": "Check ventilation and temperature conditions",
+        "id": "reminder2",
+        "text": "Test wind sensor calibration and automatic retraction",
+        "dueDate": "2025-01-19",
         "completed": false
       },
       {
-        "text": "Install battery mounting system",
+        "id": "reminder3",
+        "text": "Apply fabric protection treatment after installation",
+        "dueDate": "2025-01-20",
         "completed": false
       },
       {
-        "text": "Position and secure battery units",
-        "completed": false
-      },
-      {
-        "text": "Connect battery DC wiring",
-        "completed": false
-      },
-      {
-        "text": "Install battery management system",
-        "completed": false
-      },
-      {
-        "text": "Connect to inverter/charge controller",
-        "completed": false
-      },
-      {
-        "text": "Configure system settings",
-        "completed": false
-      },
-      {
-        "text": "Test charging and discharging cycles",
-        "completed": false
-      },
-      {
-        "text": "Install monitoring system",
-        "completed": false
-      },
-      {
-        "text": "Complete system commissioning",
+        "id": "reminder4",
+        "text": "Register product warranty with manufacturer",
+        "dueDate": "2025-01-21",
         "completed": false
       }
     ],
-    "reminders": "Battery Safety:\n- Wear protective equipment\n- Follow manufacturer's safety guidelines\n- Ensure proper ventilation\n- Check for proper grounding\n\nTools needed:\n- Battery terminal tools\n- Torque wrench\n- Safety equipment\n- Multimeter",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
+    "createdAt": "2025-01-14T11:00:00Z",
+    "updatedAt": "2025-01-14T11:00:00Z"
   }
 ] 
