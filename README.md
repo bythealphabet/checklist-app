@@ -1,180 +1,103 @@
-# SolarGard Installation Checklist Manager
+# SolarGard Checklist - Desktop Application
 
-A simple Node.js web application for managing installation checklists for solar products. This application helps ensure you don't forget anything before leaving for an installation.
+A desktop application for managing solar installation checklists, built with Electron and Express.
 
 ## Features
 
-- 📋 **Create Checklists**: Add new installation checklists for different solar products
-- 🖼️ **Product Images**: Upload and display product images for easy identification
-- ✅ **Interactive Checklists**: Check off items as you complete them with real-time progress tracking
-- 📝 **Reminders Section**: Add notes about extra items to buy or special installation requirements
-- ✏️ **Edit Mode**: Update existing checklists, add/remove items, and modify content
-- 📱 **Responsive Design**: Works on desktop, tablet, and mobile devices
-- 💾 **Auto-save**: Automatically saves progress when checking off items
+- ✅ Desktop application (no browser required)
+- 📋 Create and manage installation checklists
+- 📸 Photo attachments for checklist items
+- 💾 Local data storage
+- 🖥️ Cross-platform (Windows, macOS, Linux)
 
-## Installation
+## Development
 
 ### Prerequisites
-- Node.js (version 14 or higher)
-- npm (comes with Node.js)
+- Node.js (v16 or higher)
+- npm
 
-### Setup
+### Installation
+```bash
+npm install
+```
 
-1. **Clone or download this repository**
-   ```bash
-   git clone <repository-url>
-   cd solargard-checklist
-   ```
+### Running in Development
+```bash
+# Run the Electron app in development mode
+npm run electron-dev
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+# Or run just the web server (for browser testing)
+npm start
+```
 
-3. **Start the application**
-   ```bash
-   npm start
-   ```
-   
-   For development with auto-restart:
-   ```bash
-   npm run dev
-   ```
+## Building for Production
 
-4. **Open your browser**
-   Navigate to `http://localhost:3000`
+### Build for Current Platform
+```bash
+npm run build
+```
 
-## Usage
+### Build for Specific Platforms
+```bash
+# Windows
+npm run build-win
 
-### Creating a New Checklist
+# macOS
+npm run build-mac
 
-1. Click "Create New Checklist" on the home page
-2. Enter the product name (e.g., "Solar Panel System Model X")
-3. Upload a product image (optional)
-4. Add checklist items - the form comes with some default items, but you can:
-   - Modify existing items
-   - Add new items with the "+ Add Item" button
-   - Remove items with the "Remove" button
-5. Add any reminders or extra items in the text area
-6. Click "Create Checklist"
+# Linux
+npm run build-linux
+```
 
-### Using a Checklist
+### Build All Platforms
+```bash
+npm run dist
+```
 
-1. From the home page, click "View" on any checklist
-2. Check off items as you complete them
-3. Progress is automatically saved and displayed with a progress bar
-4. View reminders and extra items in the right panel
-
-### Editing a Checklist
-
-1. Click "Edit" on any checklist from the home page, or
-2. Click "Edit Checklist" when viewing a checklist
-3. In edit mode you can:
-   - Add new checklist items
-   - Remove existing items
-   - Modify item text
-   - Update the reminders section
-4. Click "Save Changes" to save your modifications
-
-### Managing Checklists
-
-- **View All**: The home page shows all your checklists with preview images
-- **Delete**: Remove checklists you no longer need
-- **Search**: Checklists show item count and last updated date
+The built applications will be available in the `dist/` directory.
 
 ## File Structure
 
 ```
 solargard-checklist/
-├── server.js              # Main server file
-├── package.json           # Dependencies and scripts
-├── public/                # Static web files
-│   ├── index.html        # Home page
-│   ├── create.html       # Create new checklist
-│   └── edit.html         # View/edit checklist
-├── data/                 # JSON data storage
-│   └── checklists.json   # Checklist data
-├── uploads/              # Uploaded images
-└── README.md            # This file
+├── electron.js          # Main Electron process
+├── server.js           # Express server
+├── package.json        # Dependencies and build config
+├── public/            # Static web assets
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+├── data/              # Data storage
+│   └── initial-data.json
+├── uploads/           # Photo uploads
+└── assets/           # Application icons
 ```
 
-## Data Storage
+## How It Works
 
-The application stores data in JSON files:
-- **Checklists**: Stored in `data/checklists.json`
-- **Images**: Stored in the `uploads/` directory
+1. **Electron Main Process**: `electron.js` creates the desktop window and manages the application lifecycle
+2. **Express Server**: `server.js` runs internally to serve the web interface and handle API requests
+3. **Web Interface**: The familiar web interface runs inside the Electron window
+4. **Data Storage**: All data is stored locally in JSON files
 
-Each checklist contains:
-```json
-{
-  "id": "unique-id",
-  "name": "Product Name",
-  "image": "/uploads/image-file.jpg",
-  "items": [
-    {
-      "text": "Check site conditions",
-      "completed": false
-    }
-  ],
-  "reminders": "Extra items to buy...",
-  "createdAt": "2024-01-01T00:00:00.000Z",
-  "updatedAt": "2024-01-01T00:00:00.000Z"
-}
-```
+## Usage
+
+1. **Development**: Run `npm run electron-dev` to start the app with developer tools
+2. **Production**: Run `npm run build` to create an executable for your platform
+3. **Distribution**: Share the built executable - no installation of Node.js required on target machines
 
 ## Customization
 
-### Default Checklist Items
-You can modify the default checklist items in `public/create.html` by editing the `defaultItems` array:
-
-```javascript
-const defaultItems = [
-    'Check site conditions and safety',
-    'Verify all equipment is present',
-    'Prepare installation tools',
-    'Review installation manual'
-];
-```
-
-### Styling
-The application uses inline CSS for simplicity. You can modify the styles in each HTML file to match your branding.
-
-### Port Configuration
-By default, the application runs on port 3000. You can change this by setting the `PORT` environment variable:
-
-```bash
-PORT=8080 npm start
-```
+- **Icons**: Replace files in `assets/` directory with your custom icons
+- **Window Settings**: Modify `electron.js` to change window size, title, etc.
+- **Build Settings**: Update the `build` section in `package.json` for custom build configurations
 
 ## Troubleshooting
 
-### Common Issues
-
-1. **Port already in use**
-   - Change the port in `server.js` or kill the process using port 3000
-   - Use: `lsof -ti:3000 | xargs kill -9` (macOS/Linux)
-
-2. **Images not displaying**
-   - Check that the `uploads/` directory exists and has proper permissions
-   - Ensure uploaded files are valid image formats
-
-3. **Data not saving**
-   - Check that the `data/` directory exists and is writable
-   - Look for error messages in the console
-
-### Development
-
-To run in development mode with automatic restarts:
-```bash
-npm run dev
-```
-
-This uses `nodemon` to automatically restart the server when files change.
+- **Port Issues**: The app uses port 3000 internally. If you have conflicts, modify the port in both `server.js` and `electron.js`
+- **Build Issues**: Ensure all dependencies are installed with `npm install`
+- **Icon Issues**: The app will work without custom icons, but you may see warnings during build
 
 ## License
 
-MIT License - feel free to modify and use for your solar installation business!
-
-## Support
-
-For issues or questions, please check the console for error messages and ensure all dependencies are properly installed. 
+MIT 
