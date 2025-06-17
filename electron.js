@@ -2,10 +2,92 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const http = require('http');
+const fs = require('fs');
 
 let mainWindow;
 let serverProcess;
 let serverReady = false;
+
+// Determine if we're running in development or production
+const isDev = process.env.NODE_ENV === 'development';
+const isPackaged = app.isPackaged;
+
+// Get the correct paths for production vs development
+function getAppPath() {
+  if (isPackaged) {
+    // In production, check if we have an asar file or unpacked app
+    const asarPath = path.join(process.resourcesPath, 'app.asar');
+    const unpackedPath = path.join(process.resourcesPath, 'app');
+    
+    if (fs.existsSync(asarPath)) {
+      return asarPath;
+    } else if (fs.existsSync(unpackedPath)) {
+      return unpackedPath;
+    } else {
+      // Fallback to resources path
+      return process.resourcesPath;
+    }
+  } else {
+    // In development, use the current directory
+    return __dirname;
+  }
+}
+
+function getServerPath() {
+  if (isPackaged) {
+    // In production, try different possible locations for server.js
+    const possiblePaths = [
+      path.join(process.resourcesPath, 'app.asar', 'server.js'),
+      path.join(process.resourcesPath, 'app', 'server.js'),
+      path.join(process.resourcesPath, 'server.js'),
+      path.join(__dirname, 'server.js')
+    ];
+    
+    for (const serverPath of possiblePaths) {
+      if (fs.existsSync(serverPath)) {
+        console.log('Found server.js at:', serverPath);
+        return serverPath;
+      }
+    }
+    
+    // If no server.js found, log available files
+    console.log('Could not find server.js. Looking in:', process.resourcesPath);
+    try {
+      const files = fs.readdirSync(process.resourcesPath);
+      console.log('Available files in resources:', files);
+    } catch (e) {
+      console.log('Error reading resources directory:', e.message);
+    }
+    
+    // Return the first path as fallback
+    return possiblePaths[0];
+  } else {
+    // In development
+    return path.join(__dirname, 'server.js');
+  }
+}
+
+function getWorkingDirectory() {
+  if (isPackaged) {
+    // Try different working directories
+    const possibleDirs = [
+      path.join(process.resourcesPath, 'app'),
+      path.join(process.resourcesPath),
+      path.dirname(getServerPath())
+    ];
+    
+    for (const dir of possibleDirs) {
+      if (fs.existsSync(dir)) {
+        console.log('Using working directory:', dir);
+        return dir;
+      }
+    }
+    
+    return process.resourcesPath;
+  } else {
+    return __dirname;
+  }
+}
 
 function checkServerReady(port = 3000, maxAttempts = 30) {
   return new Promise((resolve, reject) => {
@@ -72,9 +154,28 @@ function createWindow() {
 
   // Start the Express server
   console.log('Starting Express server...');
-  serverProcess = spawn('node', ['server.js'], {
-    cwd: __dirname,
-    stdio: 'pipe'
+  console.log('Is packaged:', isPackaged);
+  console.log('App path:', getAppPath());
+  console.log('Process resources path:', process.resourcesPath);
+  
+  const serverPath = getServerPath();
+  const workingDir = getWorkingDirectory();
+  
+  console.log('Server path:', serverPath);
+  console.log('Working directory:', workingDir);
+  
+  // Set environment variables for the server process
+  const env = { 
+    ...process.env,
+    NODE_ENV: isPackaged ? 'production' : 'development',
+    ELECTRON_RUN_AS_NODE: '1',  // This helps with running Node.js in Electron context
+    ELECTRON_IS_PACKAGED: isPackaged ? '1' : '0'
+  };
+  
+  serverProcess = spawn(process.execPath, [serverPath], {
+    cwd: workingDir,
+    stdio: 'pipe',
+    env: env
   });
 
   // Handle server output
@@ -88,7 +189,7 @@ function createWindow() {
 
   serverProcess.on('error', (error) => {
     console.error('Failed to start server:', error);
-    mainWindow.loadURL('data:text/html,<html><body style="font-family: Arial; text-align: center; padding: 50px; color: red;"><h2>Error Starting Server</h2><p>Failed to start the application server. Please try again.</p><p>Error: ' + error.message + '</p></body></html>');
+    mainWindow.loadURL('data:text/html,<html><body style="font-family: Arial; text-align: center; padding: 50px; color: red;"><h2>Error Starting Server</h2><p>Failed to start the application server. Please try again.</p><p>Error: ' + error.message + '</p><p>Server path: ' + serverPath + '</p><p>Working dir: ' + workingDir + '</p></body></html>');
   });
 
   // Wait for server to be ready, then load the app
@@ -102,11 +203,11 @@ function createWindow() {
     })
     .catch((error) => {
       console.error('Server failed to start:', error);
-      mainWindow.loadURL('data:text/html,<html><body style="font-family: Arial; text-align: center; padding: 50px; color: red;"><h2>Server Failed to Start</h2><p>The application server could not be started. Please check the console for errors.</p><p>Error: ' + error.message + '</p></body></html>');
+      mainWindow.loadURL('data:text/html,<html><body style="font-family: Arial; text-align: center; padding: 50px; color: red;"><h2>Server Failed to Start</h2><p>The application server could not be started. Please check the console for errors.</p><p>Error: ' + error.message + '</p><p>Server path: ' + getServerPath() + '</p><p>Working dir: ' + getWorkingDirectory() + '</p></body></html>');
     });
 
   // Open DevTools in development
-  if (process.env.NODE_ENV === 'development') {
+  if (isDev) {
     mainWindow.webContents.openDevTools();
   }
 

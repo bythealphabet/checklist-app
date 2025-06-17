@@ -13,40 +13,33 @@
     "build-win": "electron-builder --win",
     "build-mac": "electron-builder --mac",
     "build-linux": "electron-builder --linux",
+    "build-linux-only": "electron-builder --linux --x64",
     "dist": "electron-builder --publish=never",
     "pack": "electron-builder --dir"
   },
   "build": {
     "appId": "com.solargard.checklist",
     "productName": "SolarGard Checklist",
+    "asar": false,
+    "electronVersion": "36.4.0",
     "directories": {
       "output": "dist"
     },
     "files": [
       "**/*",
-      "!node_modules/**/*",
-      "node_modules/express/**/*",
-      "node_modules/multer/**/*",
-      "node_modules/path/**/*",
-      "node_modules/fs/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": "data/",
-        "to": "data/"
-      },
-      {
-        "from": "public/",
-        "to": "public/"
-      },
-      {
-        "from": "uploads/",
-        "to": "uploads/"
-      }
+      "!dist/**/*",
+      "!.git/**/*",
+      "!README.md",
+      "!build-instructions.md",
+      "!Dockerfile.build",
+      "!node_modules/.cache/**/*",
+      "!test-build.sh",
+      "!build.sh"
     ],
     "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
+      "target": "portable",
+      "icon": "assets/icon.ico",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
     "mac": {
       "target": "dmg",
@@ -54,34 +47,23 @@
     },
     "linux": {
       "target": "AppImage",
-      "icon": "assets/icon.png"
+      "icon": "assets/icon.png",
+      "category": "Utility"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     }
   },
-  "bin": "server.js",
-  "pkg": {
-    "assets": [
-      "public/**/*",
-      "data/initial-data.json",
-      "uploads/.gitkeep"
-    ],
-    "outputPath": "dist"
-  },
   "dependencies": {
     "express": "^4.18.2",
-    "fs": "^0.0.1-security",
     "multer": "^1.4.5-lts.1",
-    "path": "^0.12.7",
     "puppeteer": "^24.10.1"
   },
   "devDependencies": {
     "electron": "^36.4.0",
     "electron-builder": "^26.0.12",
-    "nodemon": "^3.0.1",
-    "pkg": "^5.8.1"
+    "nodemon": "^3.0.1"
   },
   "keywords": [
     "solar",

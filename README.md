@@ -1,103 +1,97 @@
-# SolarGard Checklist - Desktop Application
+# SolarGard Checklist Manager
 
-A desktop application for managing solar installation checklists, built with Electron and Express.
+A professional installation checklist management application for solar products, built with Electron for cross-platform desktop deployment.
 
 ## Features
 
-- ✅ Desktop application (no browser required)
-- 📋 Create and manage installation checklists
-- 📸 Photo attachments for checklist items
-- 💾 Local data storage
-- 🖥️ Cross-platform (Windows, macOS, Linux)
+- ✅ **Digital Checklists**: Create and manage installation checklists
+- 📸 **Image Support**: Add photos to checklist items for documentation
+- 📄 **PDF Export**: Generate professional PDF reports with embedded images
+- 🌐 **Network Access**: Access from mobile devices on the same network
+- 💻 **Cross-Platform**: Available for Windows, Linux, and macOS
 
-## Development
+## Quick Start
 
-### Prerequisites
-- Node.js (v16 or higher)
-- npm
+### Desktop Application (Recommended)
 
-### Installation
+1. **Download** the appropriate version for your platform:
+   - **Windows**: `dist/win-unpacked/SolarGard Checklist.exe`
+   - **Linux**: `dist/SolarGard Checklist-1.0.0.AppImage`
+
+2. **Run** the application:
+   - **Windows**: Double-click the `.exe` file
+   - **Linux**: `chmod +x "SolarGard Checklist-1.0.0.AppImage" && ./SolarGard\ Checklist-1.0.0.AppImage`
+
+3. **Access**: The app will automatically start a local server and open the interface
+
+### Development Setup
+
 ```bash
+# Install dependencies
 npm install
-```
 
-### Running in Development
-```bash
-# Run the Electron app in development mode
+# Run in development mode
+npm run dev
+
+# Run Electron app in development
 npm run electron-dev
-
-# Or run just the web server (for browser testing)
-npm start
 ```
 
-## Building for Production
+## Building from Source
 
-### Build for Current Platform
 ```bash
+# Build for all platforms
 npm run build
+
+# Build for specific platforms
+npm run build-win    # Windows
+npm run build-linux  # Linux AppImage
+npm run build-mac    # macOS (requires macOS)
 ```
-
-### Build for Specific Platforms
-```bash
-# Windows
-npm run build-win
-
-# macOS
-npm run build-mac
-
-# Linux
-npm run build-linux
-```
-
-### Build All Platforms
-```bash
-npm run dist
-```
-
-The built applications will be available in the `dist/` directory.
-
-## File Structure
-
-```
-solargard-checklist/
-├── electron.js          # Main Electron process
-├── server.js           # Express server
-├── package.json        # Dependencies and build config
-├── public/            # Static web assets
-│   ├── index.html
-│   ├── style.css
-│   └── script.js
-├── data/              # Data storage
-│   └── initial-data.json
-├── uploads/           # Photo uploads
-└── assets/           # Application icons
-```
-
-## How It Works
-
-1. **Electron Main Process**: `electron.js` creates the desktop window and manages the application lifecycle
-2. **Express Server**: `server.js` runs internally to serve the web interface and handle API requests
-3. **Web Interface**: The familiar web interface runs inside the Electron window
-4. **Data Storage**: All data is stored locally in JSON files
 
 ## Usage
 
-1. **Development**: Run `npm run electron-dev` to start the app with developer tools
-2. **Production**: Run `npm run build` to create an executable for your platform
-3. **Distribution**: Share the built executable - no installation of Node.js required on target machines
+1. **Create Checklist**: Click "Create New Checklist" to start
+2. **Add Items**: Add checklist items with optional images
+3. **Track Progress**: Mark items as completed during installation
+4. **Generate PDF**: Export completed checklists as professional PDFs
+5. **Mobile Access**: Use the network URL to access from phones/tablets
 
-## Customization
+## Network Access
 
-- **Icons**: Replace files in `assets/` directory with your custom icons
-- **Window Settings**: Modify `electron.js` to change window size, title, etc.
-- **Build Settings**: Update the `build` section in `package.json` for custom build configurations
+The application displays both local and network URLs:
+- **Local**: `http://localhost:3000` (same computer)
+- **Network**: `http://[your-ip]:3000` (other devices on same WiFi)
 
-## Troubleshooting
+## Technical Details
 
-- **Port Issues**: The app uses port 3000 internally. If you have conflicts, modify the port in both `server.js` and `electron.js`
-- **Build Issues**: Ensure all dependencies are installed with `npm install`
-- **Icon Issues**: The app will work without custom icons, but you may see warnings during build
+- **Frontend**: HTML, CSS, JavaScript
+- **Backend**: Node.js with Express
+- **PDF Generation**: Puppeteer with base64 image embedding
+- **File Upload**: Multer for image handling
+- **Desktop**: Electron for cross-platform deployment
+
+## Project Structure
+
+```
+solargard-checklist/
+├── electron.js          # Electron main process
+├── server.js           # Express server
+├── public/             # Frontend files
+├── assets/             # Application icons
+├── data/               # Application data
+├── uploads/            # User uploaded images
+├── dist/               # Built applications
+└── node_modules/       # Dependencies
+```
+
+## Development Notes
+
+- Images are converted to base64 data URIs in PDFs for better compatibility
+- Server automatically detects and displays network IP
+- Electron builds use unpacked mode (`asar: false`) for better file access
+- Path resolution handles both development and packaged environments
 
 ## License
 
-MIT 
+MIT License - see LICENSE file for details 

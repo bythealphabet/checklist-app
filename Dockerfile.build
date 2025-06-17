@@ -1,0 +1,30 @@
+FROM node:18-bullseye
+
+# Install Wine and dependencies
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    apt-get install -y \
+    wine \
+    wine32 \
+    wine64 \
+    xvfb \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up Wine
+ENV WINEPREFIX=/root/.wine
+ENV WINEARCH=win32
+RUN wine wineboot --init
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Build for all platforms
+CMD ["npm", "run", "dist"] 

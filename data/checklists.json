@@ -1,105 +1,22 @@
 [
   {
-    "id": "sample-1",
-    "name": "Solar Panel System - Residential",
-    "image": null,
+    "id": "1750166948041",
+    "name": "Updated Test Checklist",
     "items": [
       {
-        "text": "Check site conditions and safety requirements",
-        "completed": false
-      },
-      {
-        "text": "Verify all equipment is present and undamaged",
-        "completed": false
-      },
-      {
-        "text": "Prepare installation tools and safety equipment",
-        "completed": false
-      },
-      {
-        "text": "Review installation manual and local codes",
-        "completed": false
-      },
-      {
-        "text": "Measure and mark panel mounting locations",
-        "completed": false
-      },
-      {
-        "text": "Install mounting rails and hardware",
-        "completed": false
-      },
-      {
-        "text": "Mount solar panels to rails",
-        "completed": false
-      },
-      {
-        "text": "Connect DC wiring between panels",
-        "completed": false
-      },
-      {
-        "text": "Install and connect inverter",
-        "completed": false
-      },
-      {
-        "text": "Run AC wiring to electrical panel",
-        "completed": false
-      },
-      {
-        "text": "Install production meter and monitoring",
-        "completed": false
-      },
-      {
-        "text": "Test system operation and safety",
-        "completed": false
-      },
-      {
-        "text": "Complete final inspection and documentation",
-        "completed": false
-      }
-    ],
-    "reminders": "Extra items to bring:\n- Additional grounding equipment\n- Weather sealing materials\n- Spare MC4 connectors\n- Digital multimeter for testing\n\nNotes:\n- Check weather forecast before installation\n- Confirm utility interconnection approval\n- Take before/after photos for documentation",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
-  },
-  {
-    "id": "1750136731329",
-    "name": "Test Checklist",
-    "items": [
-      {
-        "name": "Test Item",
+        "name": "Brackets",
         "amount": 1,
+        "image": "",
         "completed": false
-      }
-    ],
-    "createdAt": "2025-06-17T05:05:31.329Z",
-    "updatedAt": "2025-06-17T05:05:31.329Z"
-  },
-  {
-    "id": "1750140120186",
-    "name": "Vertical drop",
-    "items": [
+      },
       {
-        "image": "/uploads/itemImage-1750140110571-285308231.png",
+        "name": "slinger",
         "amount": 1,
-        "name": "brackets",
+        "image": "",
         "completed": false
       }
     ],
-    "createdAt": "2025-06-17T06:02:00.187Z",
-    "updatedAt": "2025-06-17T06:02:00.187Z"
-  },
-  {
-    "id": "1750162831319",
-    "name": "Retractable / KnikArm Awning",
-    "items": [
-      {
-        "image": "/uploads/itemImage-1750162823580-868078007.png",
-        "amount": 1,
-        "name": "barrilla",
-        "completed": false
-      }
-    ],
-    "createdAt": "2025-06-17T12:20:31.319Z",
-    "updatedAt": "2025-06-17T12:20:31.319Z"
+    "createdAt": "2025-06-17T13:29:08.041Z",
+    "updatedAt": "2025-06-17T17:59:37.117Z"
   }
 ]

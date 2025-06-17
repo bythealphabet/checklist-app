@@ -113,6 +113,12 @@ data/checklists.json
 dist/
 *.exe
 
+# Test files and temporary outputs
+test*.pdf
+test-*.sh
+test-*.md
+*-test.*
+
 # OS generated files
 .DS_Store
 .DS_Store?
