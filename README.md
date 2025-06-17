@@ -1,30 +1,15 @@
-# SolarGard Checklist Manager
+# SolarGard Checklist
 
-A professional installation checklist management application for solar products, built with Electron for cross-platform desktop deployment.
+Installation checklist manager for solar products.
 
 ## Features
 
-- ✅ **Digital Checklists**: Create and manage installation checklists
-- 📸 **Image Support**: Add photos to checklist items for documentation
-- 📄 **PDF Export**: Generate professional PDF reports with embedded images
-- 🌐 **Network Access**: Access from mobile devices on the same network
-- 💻 **Cross-Platform**: Available for Windows, Linux, and macOS
+- Manage installation checklists for solar products
+- Professional user interface
+- Cross-platform desktop application (Windows, macOS, Linux)
+- Proper Windows installer with Start Menu integration
 
-## Quick Start
-
-### Desktop Application (Recommended)
-
-1. **Download** the appropriate version for your platform:
-   - **Windows**: `dist/win-unpacked/SolarGard Checklist.exe`
-   - **Linux**: `dist/SolarGard Checklist-1.0.0.AppImage`
-
-2. **Run** the application:
-   - **Windows**: Double-click the `.exe` file
-   - **Linux**: `chmod +x "SolarGard Checklist-1.0.0.AppImage" && ./SolarGard\ Checklist-1.0.0.AppImage`
-
-3. **Access**: The app will automatically start a local server and open the interface
-
-### Development Setup
+## Development
 
 ```bash
 # Install dependencies
@@ -33,65 +18,75 @@ npm install
 # Run in development mode
 npm run dev
 
-# Run Electron app in development
-npm run electron-dev
+# Run Electron app
+npm run electron
 ```
 
-## Building from Source
+## Building
 
+### All Platforms
 ```bash
-# Build for all platforms
 npm run build
-
-# Build for specific platforms
-npm run build-win    # Windows
-npm run build-linux  # Linux AppImage
-npm run build-mac    # macOS (requires macOS)
 ```
 
-## Usage
-
-1. **Create Checklist**: Click "Create New Checklist" to start
-2. **Add Items**: Add checklist items with optional images
-3. **Track Progress**: Mark items as completed during installation
-4. **Generate PDF**: Export completed checklists as professional PDFs
-5. **Mobile Access**: Use the network URL to access from phones/tablets
-
-## Network Access
-
-The application displays both local and network URLs:
-- **Local**: `http://localhost:3000` (same computer)
-- **Network**: `http://[your-ip]:3000` (other devices on same WiFi)
-
-## Technical Details
-
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: Node.js with Express
-- **PDF Generation**: Puppeteer with base64 image embedding
-- **File Upload**: Multer for image handling
-- **Desktop**: Electron for cross-platform deployment
-
-## Project Structure
-
-```
-solargard-checklist/
-├── electron.js          # Electron main process
-├── server.js           # Express server
-├── public/             # Frontend files
-├── assets/             # Application icons
-├── data/               # Application data
-├── uploads/            # User uploaded images
-├── dist/               # Built applications
-└── node_modules/       # Dependencies
+### Windows Installer
+```bash
+npm run build-windows
 ```
 
-## Development Notes
+This will create:
+- NSIS installer (.exe) - Installs to Program Files and adds to Windows Start Menu
+- Portable version - Can be run from any folder
 
-- Images are converted to base64 data URIs in PDFs for better compatibility
-- Server automatically detects and displays network IP
-- Electron builds use unpacked mode (`asar: false`) for better file access
-- Path resolution handles both development and packaged environments
+### Individual Platforms
+```bash
+npm run build-win     # Windows
+npm run build-mac     # macOS
+npm run build-linux   # Linux
+```
+
+## Icon Creation
+
+The app includes a professional solar-themed icon with:
+- Gradient blue background
+- Sun with radiating rays
+- Checklist visual elements
+- SolarGard branding
+
+To generate icon files:
+```bash
+node create-icons.js
+```
+
+For best quality icons, consider using tools like:
+- [Sharp](https://www.npmjs.com/package/sharp) for Node.js
+- Online converters like [favicon.io](https://favicon.io/)
+- Adobe Illustrator or similar design tools
+
+## Windows Installation
+
+The Windows installer will:
+- Install the app to Program Files
+- Create Start Menu shortcuts
+- Add to Windows Programs list (Add/Remove Programs)
+- Register file associations for .sgc files
+- Create desktop shortcut (optional)
+
+### Updates and Upgrades
+
+When you install a new version:
+- ✅ **Automatic replacement** - New installer detects and replaces the old version
+- ✅ **Single entry** - Only one "SolarGard Checklist" appears in Programs & Features
+- ✅ **User data preserved** - Your settings and data are kept safe
+- ✅ **No manual uninstall needed** - The installer handles everything
+
+The update process:
+1. Run the new installer (`SolarGard Checklist-Setup-1.1.0.exe`)
+2. It detects the existing installation
+3. Automatically removes the old version
+4. Installs the new version in the same location
+5. Preserves all your user data and settings
 
 ## License
 
-MIT License - see LICENSE file for details 
+MIT 

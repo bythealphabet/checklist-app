@@ -11,6 +11,7 @@
     "electron-dev": "NODE_ENV=development electron .",
     "build": "electron-builder",
     "build-win": "electron-builder --win",
+    "build-windows": "node build-windows.js",
     "build-mac": "electron-builder --mac",
     "build-linux": "electron-builder --linux",
     "build-linux-only": "electron-builder --linux --x64",
@@ -37,9 +38,20 @@
       "!build.sh"
     ],
     "win": {
-      "target": "portable",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
       "icon": "assets/icon.ico",
-      "artifactName": "${productName}-${version}-${arch}.${ext}"
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "requestedExecutionLevel": "asInvoker",
+      "publisherName": "SolarGard"
     },
     "mac": {
       "target": "dmg",
@@ -52,7 +64,19 @@
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "SolarGard Checklist",
+      "include": "build/installer.nsh",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true,
+      "menuCategory": "SolarGard",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
     }
   },
   "dependencies": {
