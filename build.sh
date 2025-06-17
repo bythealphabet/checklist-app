@@ -153,6 +153,17 @@ TRANSFER TO WINDOWS PC:
 3. Navigate to the extracted 'win-unpacked' folder
 4. Double-click 'SolarGard Checklist.exe' to run the application
 
+DATA TRANSFER:
+- Your current data is NOT included in the portable app (for clean distribution)
+- To transfer your data, run: npm run package-data
+- This creates 'SolarGard-Data-Package.tar.gz' with your checklists and images
+- Extract this package on the Windows PC and follow the included instructions
+
+AUTOMATIC DATA LOCATION:
+- The portable app creates a 'SolarGard-Data' folder next to the executable
+- All user data and uploads are stored there for easy backup/transfer
+- To move data between computers, just copy the 'SolarGard-Data' folder
+
 NO INSTALLATION REQUIRED:
 - The application runs directly from the extracted folder
 - All dependencies are included
@@ -174,8 +185,23 @@ EOF
         echo "✅ Created: PORTABLE-INSTRUCTIONS.txt"
         cd ..
         
+        # Create data package if data exists
+        if [ -d "data" ] || [ -d "uploads" ]; then
+            echo "📦 Creating data package..."
+            npm run package-data
+            if [ -f "SolarGard-Data-Package.tar.gz" ]; then
+                mv "SolarGard-Data-Package.tar.gz" "dist/"
+                echo "✅ Data package moved to dist/ folder"
+            fi
+        else
+            echo "ℹ️  No existing data to package"
+        fi
+        
         echo "📁 Portable files ready in dist/ folder:"
         ls -lh dist/SolarGard-Checklist-1.0.0-Portable.tar.gz dist/PORTABLE-INSTRUCTIONS.txt
+        if [ -f "dist/SolarGard-Data-Package.tar.gz" ]; then
+            ls -lh dist/SolarGard-Data-Package.tar.gz
+        fi
     else
         echo "⚠️  Windows build not found, skipping portable archive creation"
     fi

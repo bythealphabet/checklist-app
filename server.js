@@ -3,28 +3,63 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const puppeteer = require('puppeteer');
+const os = require('os');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Determine if running in Electron and packaged
+const isElectron = process.env.ELECTRON_IS_PACKAGED === '1' || process.versions.electron;
+const isPackaged = process.env.ELECTRON_IS_PACKAGED === '1';
+
+// Get the appropriate data directory
+function getDataDirectory() {
+    if (isElectron && isPackaged) {
+        // For packaged Electron app, use a directory next to the executable
+        const execDir = path.dirname(process.execPath);
+        return path.join(execDir, 'SolarGard-Data');
+    } else if (isElectron) {
+        // For development Electron, use current directory
+        return __dirname;
+    } else {
+        // For standalone Node.js server
+        return __dirname;
+    }
+}
+
+// Get paths for data and uploads
+const DATA_DIR = getDataDirectory();
+const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
+const DATA_FILE = path.join(DATA_DIR, 'data', 'checklists.json');
+const INITIAL_DATA_FILE = path.join(__dirname, 'data', 'initial-data.json');
+
+console.log('🗂️  Data directory:', DATA_DIR);
+console.log('📁 Uploads directory:', UPLOADS_DIR);
+console.log('📄 Data file:', DATA_FILE);
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(UPLOADS_DIR));
 
 // Create necessary directories
-const dirs = ['data', 'uploads', 'public'];
+const dirs = [
+    path.join(DATA_DIR, 'data'),
+    UPLOADS_DIR,
+    'public'
+];
 dirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
+        console.log('✅ Created directory:', dir);
     }
 });
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, UPLOADS_DIR);
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -36,6 +71,33 @@ const upload = multer({ storage: storage });
 
 // Helper functions
 function loadInitialData() {
+    // Try to load from initial-data.json first, then fallback to hardcoded data
+    try {
+        if (fs.existsSync(INITIAL_DATA_FILE)) {
+            const data = fs.readFileSync(INITIAL_DATA_FILE, 'utf8');
+            const parsed = JSON.parse(data);
+            // Convert initial-data format to checklists format if needed
+            if (parsed.length > 0 && parsed[0].title) {
+                return parsed.map(item => ({
+                    id: item.id,
+                    name: item.title,
+                    items: item.items ? item.items.map(subItem => ({
+                        name: subItem.text || subItem.name,
+                        amount: subItem.quantity || subItem.amount || 1,
+                        image: subItem.image || '',
+                        completed: subItem.completed || false
+                    })) : [],
+                    createdAt: item.createdAt || new Date().toISOString(),
+                    updatedAt: item.updatedAt || new Date().toISOString()
+                }));
+            }
+            return parsed;
+        }
+    } catch (error) {
+        console.log('Could not load initial-data.json, using fallback data');
+    }
+
+    // Fallback hardcoded data
     const initialChecklists = [
         {
             id: '1',
@@ -74,14 +136,12 @@ function loadInitialData() {
 }
 
 function initializeUserData() {
-    const userDataPath = path.join(__dirname, 'data', 'checklists.json');
-    
     // Only initialize if user data doesn't exist
-    if (!fs.existsSync(userDataPath)) {
+    if (!fs.existsSync(DATA_FILE)) {
         const initialData = loadInitialData();
         if (initialData.length > 0) {
             try {
-                fs.writeFileSync(userDataPath, JSON.stringify(initialData, null, 2));
+                fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
                 console.log('✅ Initialized user data with sample checklists');
                 return initialData;
             } catch (error) {
@@ -93,10 +153,8 @@ function initializeUserData() {
 }
 
 function getChecklists() {
-    const dataPath = path.join(__dirname, 'data', 'checklists.json');
-    
     // If no user data exists, initialize with template data
-    if (!fs.existsSync(dataPath)) {
+    if (!fs.existsSync(DATA_FILE)) {
         const initialized = initializeUserData();
         if (initialized) {
             return initialized;
@@ -105,7 +163,7 @@ function getChecklists() {
     }
     
     try {
-        const data = fs.readFileSync(dataPath, 'utf8');
+        const data = fs.readFileSync(DATA_FILE, 'utf8');
         return JSON.parse(data);
     } catch (error) {
         console.error('Error reading checklists:', error);
@@ -116,9 +174,8 @@ function getChecklists() {
 }
 
 function saveChecklists(checklists) {
-    const dataPath = path.join(__dirname, 'data', 'checklists.json');
     try {
-        fs.writeFileSync(dataPath, JSON.stringify(checklists, null, 2));
+        fs.writeFileSync(DATA_FILE, JSON.stringify(checklists, null, 2));
         return true;
     } catch (error) {
         console.error('Error saving checklists:', error);
@@ -156,7 +213,6 @@ app.get('/api/checklists/:id', (req, res) => {
 
 // Get network info
 app.get('/api/network-info', (req, res) => {
-    const os = require('os');
     const networkInterfaces = os.networkInterfaces();
     let networkIP = null;
     
@@ -464,7 +520,6 @@ app.delete('/api/checklists/:id', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    const os = require('os');
     const networkInterfaces = os.networkInterfaces();
     let networkIP = 'localhost';
     
