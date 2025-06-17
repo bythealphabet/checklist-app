@@ -91,6 +91,7 @@ build_app() {
                 echo "🔨 Attempting Windows build..."
                 if npm run build-win; then
                     echo "✅ Windows build successful"
+                    create_portable_archives
                 else
                     echo "❌ Windows build failed, trying Wine32 fix..."
                     read -p "Fix Wine32 configuration? (y/n): " -n 1 -r
@@ -98,7 +99,9 @@ build_app() {
                     if [[ $REPLY =~ ^[Yy]$ ]]; then
                         fix_wine32
                         echo "🔄 Retrying Windows build..."
-                        npm run build-win
+                        if npm run build-win; then
+                            create_portable_archives
+                        fi
                     else
                         echo "❌ Skipping Wine32 fix"
                     fi
@@ -109,7 +112,9 @@ build_app() {
                 echo
                 if [[ $REPLY =~ ^[Yy]$ ]]; then
                     install_wine
-                    npm run build-win
+                    if npm run build-win; then
+                        create_portable_archives
+                    fi
                 else
                     echo "❌ Skipping Windows build"
                 fi
@@ -125,6 +130,55 @@ build_app() {
             exit 1
             ;;
     esac
+}
+
+# Create portable archives for Windows build
+create_portable_archives() {
+    if [ -d "dist/win-unpacked" ]; then
+        echo "📦 Creating portable archives..."
+        
+        # Create tar.gz archive (more reliable)
+        cd dist
+        tar -czf "SolarGard-Checklist-1.0.0-Portable.tar.gz" win-unpacked/
+        echo "✅ Created: SolarGard-Checklist-1.0.0-Portable.tar.gz ($(du -h SolarGard-Checklist-1.0.0-Portable.tar.gz | cut -f1))"
+        
+        # Create instructions file
+        cat > "PORTABLE-INSTRUCTIONS.txt" << EOF
+SolarGard Checklist - Portable Windows Version
+=============================================
+
+TRANSFER TO WINDOWS PC:
+1. Copy 'SolarGard-Checklist-1.0.0-Portable.tar.gz' to your Windows PC via USB
+2. Extract the archive using 7-Zip, WinRAR, or Windows built-in extractor
+3. Navigate to the extracted 'win-unpacked' folder
+4. Double-click 'SolarGard Checklist.exe' to run the application
+
+NO INSTALLATION REQUIRED:
+- The application runs directly from the extracted folder
+- All dependencies are included
+- You can run it from USB drive or any folder
+- No admin rights needed
+
+SYSTEM REQUIREMENTS:
+- Windows 10 or newer (64-bit)
+- ~200MB disk space when extracted
+
+TROUBLESHOOTING:
+- If Windows shows a security warning, click "More info" then "Run anyway"
+- The app may take a few seconds to start on first run
+- Make sure all files in the win-unpacked folder stay together
+
+Created: $(date)
+EOF
+        
+        echo "✅ Created: PORTABLE-INSTRUCTIONS.txt"
+        cd ..
+        
+        echo "📁 Portable files ready in dist/ folder:"
+        ls -lh dist/SolarGard-Checklist-1.0.0-Portable.tar.gz dist/PORTABLE-INSTRUCTIONS.txt
+    else
+        echo "⚠️  Windows build not found, skipping portable archive creation"
+    fi
 }
 
 # Main script

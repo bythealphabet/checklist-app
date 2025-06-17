@@ -158,25 +158,67 @@ app.get('/api/checklists/:id', (req, res) => {
 app.get('/api/network-info', (req, res) => {
     const os = require('os');
     const networkInterfaces = os.networkInterfaces();
-    let networkIP = 'localhost';
+    let networkIP = null;
+    
+    console.log('Available network interfaces:', Object.keys(networkInterfaces));
     
     // Find the first non-internal IPv4 address
     for (const interfaceName in networkInterfaces) {
         const addresses = networkInterfaces[interfaceName];
+        console.log(`Interface ${interfaceName}:`, addresses.map(addr => ({
+            family: addr.family,
+            address: addr.address,
+            internal: addr.internal
+        })));
+        
         for (const address of addresses) {
             if (address.family === 'IPv4' && !address.internal) {
                 networkIP = address.address;
+                console.log(`Found network IP: ${networkIP} on interface ${interfaceName}`);
                 break;
             }
         }
-        if (networkIP !== 'localhost') break;
+        if (networkIP) break;
     }
     
-    res.json({
+    // If no network IP found, try to get a reasonable fallback
+    if (!networkIP) {
+        console.log('No external IPv4 address found, checking for common private network ranges...');
+        
+        // Look for common private network addresses as fallback
+        for (const interfaceName in networkInterfaces) {
+            const addresses = networkInterfaces[interfaceName];
+            for (const address of addresses) {
+                if (address.family === 'IPv4' && !address.internal) {
+                    // Check for private network ranges
+                    const ip = address.address;
+                    if (ip.startsWith('192.168.') || 
+                        ip.startsWith('10.') || 
+                        (ip.startsWith('172.') && parseInt(ip.split('.')[1]) >= 16 && parseInt(ip.split('.')[1]) <= 31)) {
+                        networkIP = ip;
+                        console.log(`Using private network IP: ${networkIP}`);
+                        break;
+                    }
+                }
+            }
+            if (networkIP) break;
+        }
+    }
+    
+    // Ultimate fallback
+    if (!networkIP) {
+        console.log('Still no network IP found, using localhost as fallback');
+        networkIP = 'localhost';
+    }
+    
+    const result = {
         localUrl: `http://localhost:${PORT}`,
         networkUrl: `http://${networkIP}:${PORT}`,
         networkIP: networkIP
-    });
+    };
+    
+    console.log('Returning network info:', result);
+    res.json(result);
 });
 
 // Generate PDF for checklist
